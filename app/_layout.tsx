@@ -1,39 +1,55 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
-
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+import { Stack, useRouter } from "expo-router";
+import { TouchableOpacity } from "react-native";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
+  const router = useRouter();
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <Stack
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: "#f9e3be",
+        },
+        headerShadowVisible: false,
+        headerRight: () => (
+          <TouchableOpacity onPress={() => router.push("/AddPet")}>
+            <MaterialIcons name="add" size={30} color="black" />
+          </TouchableOpacity>
+        ),
+      }}
+    >
+      <Stack.Screen
+        name="index"
+        options={{
+          headerTitle: "Pet Adoption",
+          headerStyle: {
+            backgroundColor: "#f9e3be",
+          },
+          headerShadowVisible: false,
+        }}
+      />
+      <Stack.Screen
+        name="[petId]"
+        options={{
+          headerTitle: "Pet Details",
+          headerStyle: {
+            backgroundColor: "#f9e3be",
+          },
+          headerShadowVisible: false,
+        }}
+      />
+      <Stack.Screen
+        name="AddPet"
+        options={{
+          headerTitle: "Add Pet",
+          presentation: "modal",
+          headerRight: () => (
+            <TouchableOpacity onPress={() => router.back()}>
+              <MaterialIcons name="close" size={30} color="black" />
+            </TouchableOpacity>
+          ),
+        }}
+      />
+    </Stack>
   );
 }
