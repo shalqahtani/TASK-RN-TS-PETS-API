@@ -4,6 +4,7 @@ import { useLocalSearchParams } from "expo-router";
 import pets from "@/data/pets";
 import { fetchPets } from "@/api/getPet";
 import instance from "@/api";
+import { deletePet } from "@/api/post";
 interface Pet {
   id: number;
   name: string;
@@ -23,7 +24,9 @@ const PetDetails = () => {
       const response = await instance.get<Pet[]>("/pets");
       //alert("petId" + petId);
       // alert("response.data" + response.data);
-      const mypet = response.data.filter((pet: any) => pet.id.includes(petId));
+      const mypet = response.data.filter((pet: any) =>
+        pet.id.toString().includes(petId.toString())
+      );
       //response.data.map((pet: any) => console.log("pet.id : ", pet.id));
       //alert("mypet" + mypet);
       setPets(mypet[0]);
@@ -45,7 +48,10 @@ const PetDetails = () => {
       <Text style={styles.type}>Type: {pet.type}</Text>
 
       <View>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => deletePet(pet.id)}
+        >
           <Text style={styles.buttonText}>Delete</Text>
         </TouchableOpacity>
       </View>
