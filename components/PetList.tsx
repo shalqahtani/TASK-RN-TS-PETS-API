@@ -9,6 +9,7 @@ import React, { useEffect, useState } from "react";
 import pets from "@/data/pets";
 import PetItem from "./PetItem";
 import instance from "@/api";
+import { useQuery } from "@tanstack/react-query";
 
 const PetList = () => {
   const [search, setSearch] = useState("");
@@ -22,6 +23,7 @@ const PetList = () => {
     type: string;
     image: string;
   }
+
   const fetchPets = async () => {
     try {
       const response = await instance.get<Pet[]>("/pets");
@@ -37,6 +39,11 @@ const PetList = () => {
     fetchPets();
   }, []);
 
+  const { data, isFetching, isSuccess } = useQuery({
+    queryKey: ["getPets"],
+    queryFn: fetchPets,
+  });
+
   const petList = displayPets
     .filter((pet: any) => pet.name.toLowerCase().includes(search.toLowerCase()))
     .filter((pet: any) => pet.type.toLowerCase().includes(type.toLowerCase()))
@@ -47,6 +54,9 @@ const PetList = () => {
         displayPets={displayPets}
       />
     ));
+
+  if (isFetching) return <Text>Loading...</Text>;
+
   return (
     <ScrollView
       contentContainerStyle={styles.container}
@@ -58,7 +68,6 @@ const PetList = () => {
         style={styles.searchInput}
         onChangeText={(value) => setSearch(value)}
       />
-
       {/* Filter by type */}
       <ScrollView horizontal contentContainerStyle={styles.filterContainer}>
         <TouchableOpacity
@@ -86,7 +95,6 @@ const PetList = () => {
           <Text>Rabbit</Text>
         </TouchableOpacity>
       </ScrollView>
-
       {/* Pet List */}
       {petList}
     </ScrollView>

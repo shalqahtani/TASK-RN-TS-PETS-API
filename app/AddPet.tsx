@@ -1,4 +1,5 @@
 import {
+  Button,
   StyleSheet,
   Text,
   TextInput,
@@ -7,6 +8,7 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import { addPet } from "@/api/post";
+import { useMutation } from "@tanstack/react-query";
 
 const AddPet = () => {
   interface PetInfo {
@@ -26,6 +28,14 @@ const AddPet = () => {
       adopted: 0,
     };
   };
+  const { mutate, isPending } = useMutation({
+    mutationKey: ["addPet"],
+    mutationFn: () => addPet(getPetObj()),
+    onSuccess: () => {
+      alert("New Pet added");
+      console.log("New Pet added");
+    },
+  });
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Add Your Pet! </Text>
@@ -49,10 +59,11 @@ const AddPet = () => {
         onChangeText={setPetImage}
       />
       <TextInput placeholder="Adopted" style={styles.input} id="adopted" />
-
+      {/* <Button title="Add Pet" onPress={() => mutate()} /> */}
       <TouchableOpacity
         style={styles.button}
-        onPress={() => addPet(getPetObj())}
+        // onPress={() => addPet(getPetObj())}
+        onPress={() => mutate()}
       >
         <Text style={styles.buttonText}>Add Pet</Text>
       </TouchableOpacity>
