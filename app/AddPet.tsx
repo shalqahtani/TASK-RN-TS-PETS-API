@@ -59,13 +59,13 @@ const AddPet = () => {
         onChangeText={setPetImage}
       />
       <TextInput placeholder="Adopted" style={styles.input} id="adopted" />
-      {/* <Button title="Add Pet" onPress={() => mutate()} /> */}
       <TouchableOpacity
         style={styles.button}
-        // onPress={() => addPet(getPetObj())}
+        // onPress={() => addPet(getPetObj())} //call api directly without mutation
         onPress={() => mutate()}
       >
         <Text style={styles.buttonText}>Add Pet</Text>
+        {isPending && <Text>Adding new Pet </Text>}
       </TouchableOpacity>
     </View>
   );
