@@ -5,26 +5,58 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import pets from "@/data/pets";
 import PetItem from "./PetItem";
+import instance from "@/api";
+import { useQuery } from "@tanstack/react-query";
 
 const PetList = () => {
   const [search, setSearch] = useState("");
   const [type, setType] = useState("");
-  const [displayPets, setDisplayPets] = useState(pets);
+
+  const [displayPets, setDisplayPets] = useState<Pet[]>([]);
+  interface Pet {
+    id: number;
+    name: string;
+    description: string;
+    type: string;
+    image: string;
+  }
+
+  const fetchPets = async () => {
+    try {
+      const response = await instance.get<Pet[]>("/pets");
+      const allPets = response.data;
+      setDisplayPets(allPets);
+    } catch (error) {
+      console.error("Error fetching pets:", error);
+    } finally {
+    }
+  };
+
+  useEffect(() => {
+    fetchPets();
+  }, []);
+
+  const { data, isFetching, isSuccess } = useQuery({
+    queryKey: ["getPets"],
+    queryFn: fetchPets,
+  });
 
   const petList = displayPets
-    .filter((pet) => pet.name.toLowerCase().includes(search.toLowerCase()))
-    .filter((pet) => pet.type.toLowerCase().includes(type.toLowerCase()))
-    .map((pet) => (
+    .filter((pet: any) => pet.name.toLowerCase().includes(search.toLowerCase()))
+    .filter((pet: any) => pet.type.toLowerCase().includes(type.toLowerCase()))
+    .map((pet: any) => (
       <PetItem
-        key={pet.id}
         pet={pet}
         setDisplayPets={setDisplayPets}
         displayPets={displayPets}
       />
     ));
+
+  if (isFetching) return <Text>Loading...</Text>;
+
   return (
     <ScrollView
       contentContainerStyle={styles.container}
@@ -36,7 +68,6 @@ const PetList = () => {
         style={styles.searchInput}
         onChangeText={(value) => setSearch(value)}
       />
-
       {/* Filter by type */}
       <ScrollView horizontal contentContainerStyle={styles.filterContainer}>
         <TouchableOpacity
@@ -64,7 +95,6 @@ const PetList = () => {
           <Text>Rabbit</Text>
         </TouchableOpacity>
       </ScrollView>
-
       {/* Pet List */}
       {petList}
     </ScrollView>

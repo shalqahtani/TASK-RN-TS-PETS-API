@@ -20,6 +20,7 @@ interface PetItemProps {
   };
   setDisplayPets: (pets: any[]) => void;
   displayPets: any[];
+  [key: string]: any; // Optional: allows extra fields
 }
 
 const PetItem = ({ pet, setDisplayPets, displayPets }: PetItemProps) => {
